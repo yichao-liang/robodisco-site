@@ -6,615 +6,335 @@
     <meta name="description" content="MARA RoboSim: A benchmark of simulated robotic manipulation environments for embodied world model learning and causal discovery">
     <title>MARA RoboSim: A Benchmark for Embodied World Model Learning</title>
     <style>
-        /* Reset and Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --accent: #38bdf8;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --glow: rgba(56, 189, 248, 0.15);
         }
+
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f1f5f9;
+            --bg-card: #f1f5f9;
+            --accent: #0284c7;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --glow: rgba(2, 132, 199, 0.12);
+        }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: var(--text-primary);
+            background: var(--bg-primary);
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-        /* Header and Navigation */
+        /* ── Header ── */
         header {
-            background-color: #2c3e50;
-            color: white;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
             padding: 1rem 0;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
-        header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        header .container { display: flex; justify-content: space-between; align-items: center; }
 
-        header .logo {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: white;
-            text-decoration: none;
+        .logo {
+            font-size: 1.15rem; font-weight: 700;
+            color: var(--text-primary); text-decoration: none; letter-spacing: -0.02em;
         }
+        .logo span { color: var(--accent); }
 
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
+        .nav-links { list-style: none; display: flex; gap: 2rem; align-items: center; }
+
+        .theme-toggle {
+            background: none; border: 1px solid var(--border); border-radius: 6px;
+            color: var(--text-secondary); cursor: pointer; padding: 0.35rem 0.6rem;
+            font-size: 1rem; line-height: 1; transition: color 0.2s, border-color 0.2s;
         }
-
+        .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
         .nav-links a {
-            color: white;
-            text-decoration: none;
-            transition: color 0.3s;
-            font-weight: 500;
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 0.9rem; font-weight: 500; transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent); }
+
+        /* ── Hero ── */
+        .hero { padding: 5rem 0 2rem; text-align: center; }
+
+        .hero h1 {
+            font-size: 3rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
 
-        .nav-links a:hover {
-            color: #a8b8f0;
+        .hero .subtitle {
+            font-size: 1.15rem; color: var(--text-secondary);
+            max-width: 640px; margin: 0 auto 1rem; line-height: 1.7;
         }
 
-        /* Title Section */
-        .title-section {
-            padding: 5rem 0 3rem;
-            text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .hero .hover-hint {
+            font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2.5rem;
         }
 
-        .title-section h1 {
-            font-size: 2.8rem;
-            color: white;
-            margin-bottom: 1.25rem;
-            font-weight: 700;
+        /* ── GIF Grid (hero) ── */
+        .gif-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 10px; margin-bottom: 1rem;
         }
 
-        .title-section .subtitle {
-            font-size: 1.25rem;
-            color: rgba(255, 255, 255, 0.9);
-            max-width: 750px;
-            margin: 0 auto;
-            line-height: 1.7;
+        .gif-cell {
+            position: relative; border-radius: 8px; overflow: hidden;
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+            cursor: default;
+        }
+        .gif-cell:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--glow);
+            transform: translateY(-2px);
+        }
+        .gif-cell img { width: 100%; height: auto; display: block; }
+
+        .gif-cell .label {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            padding: 1.5rem 0.5rem 0.35rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+            color: #f1f5f9; font-size: 0.7rem; font-weight: 600;
+            text-align: center; letter-spacing: 0.03em; text-transform: uppercase;
         }
 
-        /* Hero Section (GIF Grid) */
-        #hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0 0 3rem;
-            text-align: center;
+        .gif-cell.gif-paused::after {
+            content: '\25B6'; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); font-size: 1.2rem; color: white;
+            background: rgba(0,0,0,0.45); width: 36px; height: 36px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            pointer-events: none; padding-left: 2px; opacity: 0.8; transition: opacity 0.2s;
+        }
+        .gif-cell:hover.gif-paused::after { opacity: 0; }
+
+        /* ── About ── */
+        #about { padding: 4rem 0; border-top: 1px solid var(--border); }
+
+        .section-label {
+            font-size: 0.8rem; font-weight: 600; color: var(--accent);
+            text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;
         }
 
-        .demo-showcase {
-            margin-top: 0;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
+        #about h2 {
+            font-size: 1.75rem; font-weight: 700;
+            margin-bottom: 1.5rem; letter-spacing: -0.02em;
         }
 
-        .demo-gif-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 1rem;
-            max-width: 1200px;
-            margin: 0 auto;
+        #about p {
+            font-size: 1.05rem; color: var(--text-secondary);
+            line-height: 1.85; margin-bottom: 1.25rem; max-width: 800px;
         }
 
-        .demo-gif-item {
-            position: relative;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 120px;
-        }
-
-        .demo-gif-item:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .demo-gif-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-            object-fit: contain;
-            transition: opacity 0.2s ease;
-        }
-
-        .demo-gif-item.gif-paused::after {
-            content: '\25B6';
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(0, 0, 0, 0.5);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            z-index: 2;
-            padding-left: 2px;
-        }
-
-        .demo-label {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-            color: white;
-            padding: 1.25rem 0.5rem 0.4rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        /* Sections */
-        section {
-            padding: 4rem 0;
-        }
-
-        section h2 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: #2c3e50;
-        }
-
-        section p {
-            font-size: 1.1rem;
-            color: #555;
-        }
-
-        /* Alternating section backgrounds */
-        #about {
-            background-color: #ffffff;
-        }
-
+        /* ── Environments ── */
         #environments {
-            background-color: #f8f9fa;
+            padding: 4rem 0; background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
         }
 
-        /* About Section */
-        .intro-text {
-            font-size: 1.3rem;
-            color: #667eea;
-            font-weight: 500;
-            margin-bottom: 2rem;
+        #environments h2 {
+            font-size: 1.75rem; font-weight: 700;
+            margin-bottom: 2rem; letter-spacing: -0.02em;
         }
 
-        .about-content {
-            margin-bottom: 2rem;
-        }
-
-        .about-content p {
-            margin-bottom: 1.5rem;
-            line-height: 1.8;
-            text-align: justify;
-        }
-
-        /* Environments Section */
         .env-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            margin-top: 2rem;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;
         }
 
         .env-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-top: 4px solid #667eea;
+            background: var(--bg-primary); border: 1px solid var(--border);
+            border-radius: 10px; overflow: hidden;
+            transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
         }
-
         .env-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            border-color: var(--accent);
+            box-shadow: 0 0 24px var(--glow);
+            transform: translateY(-3px);
         }
 
         .env-card-gif {
-            position: relative;
-            background: #f0f0f0;
-            overflow: hidden;
+            position: relative; background: var(--bg-secondary); overflow: hidden;
         }
-
-        .env-card-gif img {
-            width: 100%;
-            height: auto;
-            display: block;
-            object-fit: contain;
-            transition: opacity 0.2s ease;
-        }
+        .env-card-gif img { width: 100%; height: auto; display: block; }
 
         .env-card-gif.gif-paused::after {
-            content: '\25B6';
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(0, 0, 0, 0.5);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            z-index: 2;
-            padding-left: 3px;
+            content: '\25B6'; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); font-size: 1.4rem; color: white;
+            background: rgba(0,0,0,0.45); width: 44px; height: 44px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            pointer-events: none; padding-left: 3px; opacity: 0.8; transition: opacity 0.2s;
         }
+        .env-card:hover .env-card-gif.gif-paused::after { opacity: 0; }
 
-        .env-card-body {
-            padding: 1.25rem 1.5rem 1.5rem;
-        }
-
+        .env-card-body { padding: 1.25rem 1.5rem; }
         .env-card-body h3 {
-            font-size: 1.25rem;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+            font-size: 1.1rem; font-weight: 600;
+            margin-bottom: 0.3rem; color: var(--text-primary);
         }
-
         .env-card-body p {
-            font-size: 0.95rem;
-            color: #666;
-            line-height: 1.5;
-            margin: 0;
+            font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin: 0;
         }
 
-        /* Footer */
-        footer {
-            background-color: #2c3e50;
-            color: white;
-            text-align: center;
-            padding: 2.5rem 0;
-        }
+        /* ── Footer ── */
+        footer { border-top: 1px solid var(--border); padding: 2rem 0; text-align: center; }
+        footer p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; }
+        footer a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+        footer a:hover { color: var(--text-primary); }
 
-        footer p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1rem;
-            margin-bottom: 0.75rem;
-        }
-
-        footer a {
-            color: #a8b8f0;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        footer a:hover {
-            color: white;
-            text-decoration: underline;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .env-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+        /* ── Responsive ── */
+        @media (max-width: 1024px) { .env-grid { grid-template-columns: repeat(2, 1fr); } }
 
         @media (max-width: 768px) {
-            header .container {
-                flex-direction: column;
-                gap: 0.75rem;
-            }
-
-            .nav-links {
-                gap: 1rem;
-            }
-
-            .title-section {
-                padding: 3rem 0 2rem;
-            }
-
-            .title-section h1 {
-                font-size: 1.8rem;
-            }
-
-            .title-section .subtitle {
-                font-size: 1rem;
-            }
-
-            .demo-showcase {
-                padding: 1rem;
-            }
-
-            .demo-gif-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 0.75rem;
-            }
-
-            .demo-label {
-                font-size: 0.65rem;
-                padding: 1rem 0.25rem 0.3rem;
-            }
-
-            section h2 {
-                font-size: 1.5rem;
-            }
-
-            section p {
-                font-size: 1rem;
-            }
-
-            .env-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
+            header .container { flex-direction: column; gap: 0.75rem; }
+            .nav-links { gap: 1.25rem; }
+            .hero { padding: 3rem 0 1.5rem; }
+            .hero h1 { font-size: 2rem; }
+            .hero .subtitle { font-size: 1rem; }
+            .gif-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .gif-cell .label { font-size: 0.55rem; padding: 1rem 0.25rem 0.25rem; }
+            .env-grid { grid-template-columns: 1fr; }
+            #about h2, #environments h2 { font-size: 1.4rem; }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <a href="#" class="logo">MARA RoboSim</a>
+            <a href="#" class="logo">MARA <span>RoboSim</span></a>
             <nav>
                 <ul class="nav-links">
                     <li><a href="#about">About</a></li>
                     <li><a href="#environments">Environments</a></li>
                     <li><a href="https://github.com/BasisResearch/predicators/tree/mara" target="_blank">GitHub</a></li>
+                    <li><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">&#9790;</button></li>
                 </ul>
             </nav>
         </div>
     </header>
 
     <main>
-        <section class="title-section">
+        <section class="hero">
             <div class="container">
                 <h1>MARA RoboSim</h1>
                 <p class="subtitle">A benchmark of simulated robotic manipulation environments for embodied world model learning and causal discovery</p>
-            </div>
-        </section>
-
-        <section id="hero">
-            <div class="container">
-                <div class="demo-showcase">
-                    <div class="demo-gif-grid">
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_cover.gif" alt="Cover">
-                            <span class="demo-label">Cover</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_blocks.gif" alt="Blocks">
-                            <span class="demo-label">Blocks</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_balance.gif" alt="Balance">
-                            <span class="demo-label">Balance</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_coffee.gif" alt="Coffee">
-                            <span class="demo-label">Coffee</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_grow.gif" alt="Grow">
-                            <span class="demo-label">Grow</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_boil.gif" alt="Boil">
-                            <span class="demo-label">Boil</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_fan.gif" alt="Fan">
-                            <span class="demo-label">Fan</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_circuit.gif" alt="Circuit">
-                            <span class="demo-label">Circuit</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_laser.gif" alt="Laser">
-                            <span class="demo-label">Laser</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_ants.gif" alt="Ants">
-                            <span class="demo-label">Ants</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_domino.gif" alt="Domino">
-                            <span class="demo-label">Domino</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_float.gif" alt="Float">
-                            <span class="demo-label">Float</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_barrier.gif" alt="Barrier">
-                            <span class="demo-label">Barrier</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_magic_bin.gif" alt="Magic Bin">
-                            <span class="demo-label">Magic Bin</span>
-                        </div>
-                        <div class="demo-gif-item">
-                            <img src="assets/gifs/pybullet_switch.gif" alt="Switch">
-                            <span class="demo-label">Switch</span>
-                        </div>
-                    </div>
+                <p class="hover-hint">Hover to play</p>
+                <div class="gif-grid">
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_ants.gif"><img src="assets/thumbnails/pybullet_ants.png" alt="Ants"><span class="label">Ants</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_balance.gif"><img src="assets/thumbnails/pybullet_balance.png" alt="Balance"><span class="label">Balance</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_barrier.gif"><img src="assets/thumbnails/pybullet_barrier.png" alt="Barrier"><span class="label">Barrier</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_blocks.gif"><img src="assets/thumbnails/pybullet_blocks.png" alt="Blocks"><span class="label">Blocks</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_boil.gif"><img src="assets/thumbnails/pybullet_boil.png" alt="Boil"><span class="label">Boil</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_circuit.gif"><img src="assets/thumbnails/pybullet_circuit.png" alt="Circuit"><span class="label">Circuit</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_coffee.gif"><img src="assets/thumbnails/pybullet_coffee.png" alt="Coffee"><span class="label">Coffee</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_cover.gif"><img src="assets/thumbnails/pybullet_cover.png" alt="Cover"><span class="label">Cover</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_domino.gif"><img src="assets/thumbnails/pybullet_domino.png" alt="Domino"><span class="label">Domino</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_fan.gif"><img src="assets/thumbnails/pybullet_fan.png" alt="Fan"><span class="label">Fan</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_float.gif"><img src="assets/thumbnails/pybullet_float.png" alt="Float"><span class="label">Float</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_grow.gif"><img src="assets/thumbnails/pybullet_grow.png" alt="Grow"><span class="label">Grow</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_laser.gif"><img src="assets/thumbnails/pybullet_laser.png" alt="Laser"><span class="label">Laser</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_magic_bin.gif"><img src="assets/thumbnails/pybullet_magic_bin.png" alt="Magic Bin"><span class="label">Magic Bin</span></div>
+                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_switch.gif"><img src="assets/thumbnails/pybullet_switch.png" alt="Switch"><span class="label">Switch</span></div>
                 </div>
             </div>
         </section>
 
         <section id="about">
             <div class="container">
-                <h2>About MARA RoboSim</h2>
-                <p class="intro-text">A benchmark for evaluating agents that learn world models and discover causal structure through embodied interaction.</p>
-                <div class="about-content">
-                    <p>MARA RoboSim is a benchmark suite for embodied world model learning and causal discovery. It targets agents that must autonomously discover how their environment works &mdash; learning predictive models, identifying causal relationships between actions and outcomes, and forming abstractions that support planning and generalization. The benchmark is part of the MARA (Modeling, Abstraction, Reasoning, and Action) project, which aims to build agents capable of scientific reasoning about novel environments.</p>
-                    <p>The suite comprises a diverse set of 3D robotic manipulation environments built on PyBullet, each presenting distinct challenges for world model learning. A Fetch robot must interact with various objects &mdash; from stacking blocks and pouring liquids to completing circuits and redirecting lasers &mdash; requiring agents to discover diverse physical and causal phenomena such as contact mechanics, fluid dynamics, electrical connectivity, and chain reactions.</p>
-                </div>
+                <p class="section-label">About</p>
+                <h2>Embodied World Model Learning</h2>
+                <p>MARA RoboSim is a benchmark suite for embodied world model learning and causal discovery. It targets agents that must autonomously discover how their environment works &mdash; learning predictive models, identifying causal relationships between actions and outcomes, and forming abstractions that support planning and generalization.</p>
+                <p>The benchmark is part of the MARA (Modeling, Abstraction, Reasoning, and Action) project, which aims to build agents capable of scientific reasoning about novel environments.</p>
+                <p>The suite comprises a diverse set of 3D robotic manipulation environments built on PyBullet, each presenting distinct challenges for world model learning. A Fetch robot must interact with various objects &mdash; from stacking blocks and pouring liquids to completing circuits and redirecting lasers &mdash; requiring agents to discover diverse physical and causal phenomena such as contact mechanics, fluid dynamics, electrical connectivity, and chain reactions.</p>
             </div>
         </section>
 
         <section id="environments">
             <div class="container">
-                <h2>Environments</h2>
+                <p class="section-label">Environments</p>
+                <h2>Task Suite</h2>
                 <div class="env-grid">
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_cover.gif" alt="Cover Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Cover</h3>
-                            <p>Pick and place blocks onto target regions</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_ants.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_ants.png" alt="Ants"></div>
+                        <div class="env-card-body"><h3>Ants</h3><p>Guide ant-like agents to collect and transport food</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_blocks.gif" alt="Blocks Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Blocks</h3>
-                            <p>Stack blocks into specified configurations</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_balance.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_balance.png" alt="Balance"></div>
+                        <div class="env-card-body"><h3>Balance</h3><p>Balance blocks on a beam structure</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_balance.gif" alt="Balance Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Balance</h3>
-                            <p>Balance blocks on a beam structure</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_barrier.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_barrier.png" alt="Barrier"></div>
+                        <div class="env-card-body"><h3>Barrier</h3><p>Navigate around barriers to reach goal positions</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_coffee.gif" alt="Coffee Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Coffee</h3>
-                            <p>Manipulate a jug through a coffee preparation sequence</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_blocks.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_blocks.png" alt="Blocks"></div>
+                        <div class="env-card-body"><h3>Blocks</h3><p>Stack blocks into specified configurations</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_grow.gif" alt="Grow Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Grow</h3>
-                            <p>Pour water from jugs into cups to grow plants</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_boil.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_boil.png" alt="Boil"></div>
+                        <div class="env-card-body"><h3>Boil</h3><p>Heat water on burners to reach boiling temperature</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_boil.gif" alt="Boil Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Boil</h3>
-                            <p>Heat water on burners to reach boiling temperature</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_circuit.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_circuit.png" alt="Circuit"></div>
+                        <div class="env-card-body"><h3>Circuit</h3><p>Arrange components to complete electrical circuits</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_fan.gif" alt="Fan Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Fan</h3>
-                            <p>Use fans to blow objects to target locations</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_coffee.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_coffee.png" alt="Coffee"></div>
+                        <div class="env-card-body"><h3>Coffee</h3><p>Manipulate a jug through a coffee preparation sequence</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_circuit.gif" alt="Circuit Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Circuit</h3>
-                            <p>Arrange components to complete electrical circuits</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_cover.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_cover.png" alt="Cover"></div>
+                        <div class="env-card-body"><h3>Cover</h3><p>Pick and place blocks onto target regions</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_laser.gif" alt="Laser Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Laser</h3>
-                            <p>Position mirrors to redirect laser beams to targets</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_domino.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_domino.png" alt="Domino"></div>
+                        <div class="env-card-body"><h3>Domino</h3><p>Arrange dominoes to create chain reactions</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_ants.gif" alt="Ants Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Ants</h3>
-                            <p>Guide ant-like agents to collect and transport food</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_fan.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_fan.png" alt="Fan"></div>
+                        <div class="env-card-body"><h3>Fan</h3><p>Use fans to blow objects to target locations</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_domino.gif" alt="Domino Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Domino</h3>
-                            <p>Arrange dominoes to create chain reactions</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_float.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_float.png" alt="Float"></div>
+                        <div class="env-card-body"><h3>Float</h3><p>Raise water levels to float objects to target heights</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_float.gif" alt="Float Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Float</h3>
-                            <p>Raise water levels to float objects to target heights</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_grow.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_grow.png" alt="Grow"></div>
+                        <div class="env-card-body"><h3>Grow</h3><p>Pour water from jugs into cups to grow plants</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_barrier.gif" alt="Barrier Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Barrier</h3>
-                            <p>Navigate around barriers to reach goal positions</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_laser.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_laser.png" alt="Laser"></div>
+                        <div class="env-card-body"><h3>Laser</h3><p>Position mirrors to redirect laser beams to targets</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_magic_bin.gif" alt="Magic Bin Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Magic Bin</h3>
-                            <p>Sort objects into the correct bins</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_magic_bin.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_magic_bin.png" alt="Magic Bin"></div>
+                        <div class="env-card-body"><h3>Magic Bin</h3><p>Sort objects into the correct bins</p></div>
                     </div>
-                    <div class="env-card">
-                        <div class="env-card-gif">
-                            <img src="assets/gifs/pybullet_switch.gif" alt="Switch Environment">
-                        </div>
-                        <div class="env-card-body">
-                            <h3>Switch</h3>
-                            <p>Toggle switches to turn on lights</p>
-                        </div>
+                    <div class="env-card" data-gif="assets/gifs/pybullet_switch.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_switch.png" alt="Switch"></div>
+                        <div class="env-card-body"><h3>Switch</h3><p>Toggle switches to turn on lights</p></div>
                     </div>
                 </div>
             </div>
@@ -623,61 +343,72 @@
 
     <footer>
         <div class="container">
-            <p>MARA RoboSim | Basis Research</p>
+            <p>MARA RoboSim &middot; Basis Research</p>
             <p><a href="https://github.com/BasisResearch/predicators/tree/mara" target="_blank">View on GitHub</a></p>
         </div>
     </footer>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Extract first frame from each GIF and set up hover-to-play
-            function setupGifHover(container, imgSelector) {
-                const items = document.querySelectorAll(container);
-                items.forEach(item => {
-                    const img = item.querySelector(imgSelector);
-                    if (!img) return;
-                    const gifSrc = img.src;
-
-                    // Draw first frame to canvas to get a static image
-                    const tempImg = new Image();
-                    tempImg.crossOrigin = 'anonymous';
-                    tempImg.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = tempImg.naturalWidth;
-                        canvas.height = tempImg.naturalHeight;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(tempImg, 0, 0);
-                        const staticSrc = canvas.toDataURL('image/png');
-
-                        // Set static image and mark as paused
-                        img.src = staticSrc;
-                        item.classList.add('gif-paused');
-                        item.setAttribute('data-gif', gifSrc);
-                        item.setAttribute('data-static', staticSrc);
-                    };
-                    tempImg.src = gifSrc;
-
-                    item.addEventListener('mouseenter', function() {
-                        const gif = item.getAttribute('data-gif');
-                        if (gif) {
-                            img.src = gif + '?t=' + Date.now();
-                            item.classList.remove('gif-paused');
-                        }
-                    });
-
-                    item.addEventListener('mouseleave', function() {
-                        const staticImg = item.getAttribute('data-static');
-                        if (staticImg) {
-                            img.src = staticImg;
-                            item.classList.add('gif-paused');
-                        }
-                    });
-                });
+        // Theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.querySelector('.theme-toggle');
+            if (html.getAttribute('data-theme') === 'light') {
+                html.removeAttribute('data-theme');
+                btn.innerHTML = '&#9790;';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                btn.innerHTML = '&#9728;';
+                localStorage.setItem('theme', 'light');
             }
+        }
+        // Restore saved theme
+        (function() {
+            const saved = localStorage.getItem('theme');
+            if (saved === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
 
-            // Hero grid items
-            setupGifHover('.demo-gif-item', 'img');
-            // Environment card items
-            setupGifHover('.env-card-gif', 'img');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update toggle icon based on current theme
+            const btn = document.querySelector('.theme-toggle');
+            if (document.documentElement.getAttribute('data-theme') === 'light') {
+                btn.innerHTML = '&#9728;';
+            }
+            // Hero grid: hover on the cell itself
+            document.querySelectorAll('.gif-cell').forEach(cell => {
+                const img = cell.querySelector('img');
+                const gifSrc = cell.getAttribute('data-gif');
+                const staticSrc = img.src;
+
+                cell.addEventListener('mouseenter', function() {
+                    img.src = gifSrc + '?t=' + Date.now();
+                    cell.classList.remove('gif-paused');
+                });
+                cell.addEventListener('mouseleave', function() {
+                    img.src = staticSrc;
+                    cell.classList.add('gif-paused');
+                });
+            });
+
+            // Env cards: hover on the whole card, swap the gif inside
+            document.querySelectorAll('.env-card').forEach(card => {
+                const gifContainer = card.querySelector('.env-card-gif');
+                const img = gifContainer.querySelector('img');
+                const gifSrc = card.getAttribute('data-gif');
+                const staticSrc = img.src;
+
+                card.addEventListener('mouseenter', function() {
+                    img.src = gifSrc + '?t=' + Date.now();
+                    gifContainer.classList.remove('gif-paused');
+                });
+                card.addEventListener('mouseleave', function() {
+                    img.src = staticSrc;
+                    gifContainer.classList.add('gif-paused');
+                });
+            });
         });
     </script>
 </body>
