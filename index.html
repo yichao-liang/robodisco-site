@@ -9,18 +9,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: #1e293b;
-            --accent: #38bdf8;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --border: #334155;
-            --glow: rgba(56, 189, 248, 0.15);
-        }
-
-        [data-theme="light"] {
             --bg-primary: #ffffff;
             --bg-secondary: #f1f5f9;
             --bg-card: #f1f5f9;
@@ -30,6 +18,18 @@
             --text-muted: #64748b;
             --border: #e2e8f0;
             --glow: rgba(2, 132, 199, 0.12);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --accent: #38bdf8;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --glow: rgba(56, 189, 248, 0.15);
         }
 
         html { scroll-behavior: smooth; }
@@ -353,28 +353,30 @@
         function toggleTheme() {
             const html = document.documentElement;
             const btn = document.querySelector('.theme-toggle');
-            if (html.getAttribute('data-theme') === 'light') {
+            if (html.getAttribute('data-theme') === 'dark') {
                 html.removeAttribute('data-theme');
-                btn.innerHTML = '&#9790;';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                html.setAttribute('data-theme', 'light');
                 btn.innerHTML = '&#9728;';
                 localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                btn.innerHTML = '&#9790;';
+                localStorage.setItem('theme', 'dark');
             }
         }
         // Restore saved theme
         (function() {
             const saved = localStorage.getItem('theme');
-            if (saved === 'light') {
-                document.documentElement.setAttribute('data-theme', 'light');
+            if (saved === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
             }
         })();
 
         document.addEventListener('DOMContentLoaded', function() {
             // Update toggle icon based on current theme
             const btn = document.querySelector('.theme-toggle');
-            if (document.documentElement.getAttribute('data-theme') === 'light') {
+            if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                btn.innerHTML = '&#9790;';
+            } else {
                 btn.innerHTML = '&#9728;';
             }
             // Hero grid: hover on the cell itself
