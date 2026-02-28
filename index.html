@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MARA RoboSim: A benchmark of 15 simulated robotic manipulation environments for embodied world model learning and causal discovery">
+    <title>MARA RoboSim: A Benchmark for Embodied World Model Learning</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header and Navigation */
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #a8b8f0;
+        }
+
+        /* Title Section */
+        .title-section {
+            padding: 5rem 0 3rem;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .title-section h1 {
+            font-size: 2.8rem;
+            color: white;
+            margin-bottom: 1.25rem;
+            font-weight: 700;
+        }
+
+        .title-section .subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Hero Section (GIF Grid) */
+        #hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0 0 3rem;
+            text-align: center;
+        }
+
+        .demo-showcase {
+            margin-top: 0;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .demo-gif-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .demo-gif-item {
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+        }
+
+        .demo-gif-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .demo-gif-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .demo-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            color: white;
+            padding: 1.25rem 0.5rem 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Sections */
+        section {
+            padding: 4rem 0;
+        }
+
+        section h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        section p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        /* Alternating section backgrounds */
+        #about {
+            background-color: #ffffff;
+        }
+
+        #environments {
+            background-color: #f8f9fa;
+        }
+
+        /* About Section */
+        .intro-text {
+            font-size: 1.3rem;
+            color: #667eea;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+
+        .about-content {
+            margin-bottom: 2rem;
+        }
+
+        .about-content p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        /* Environments Section */
+        .env-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .env-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 4px solid #667eea;
+        }
+
+        .env-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .env-card-gif {
+            position: relative;
+            background: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .env-card-gif img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .env-card-body {
+            padding: 1.25rem 1.5rem 1.5rem;
+        }
+
+        .env-card-body h3 {
+            font-size: 1.25rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .env-card-body p {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2.5rem 0;
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        footer a {
+            color: #a8b8f0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .env-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header .container {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .title-section {
+                padding: 3rem 0 2rem;
+            }
+
+            .title-section h1 {
+                font-size: 1.8rem;
+            }
+
+            .title-section .subtitle {
+                font-size: 1rem;
+            }
+
+            .demo-showcase {
+                padding: 1rem;
+            }
+
+            .demo-gif-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.75rem;
+            }
+
+            .demo-label {
+                font-size: 0.65rem;
+                padding: 1rem 0.25rem 0.3rem;
+            }
+
+            section h2 {
+                font-size: 1.5rem;
+            }
+
+            section p {
+                font-size: 1rem;
+            }
+
+            .env-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="#" class="logo">MARA RoboSim</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#environments">Environments</a></li>
+                    <li><a href="https://github.com/BasisResearch/predicators/tree/mara" target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="title-section">
+            <div class="container">
+                <h1>MARA RoboSim</h1>
+                <p class="subtitle">A benchmark of 15 simulated robotic manipulation environments for embodied world model learning and causal discovery</p>
+            </div>
+        </section>
+
+        <section id="hero">
+            <div class="container">
+                <div class="demo-showcase">
+                    <div class="demo-gif-grid">
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_cover.gif" alt="Cover">
+                            <span class="demo-label">Cover</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_blocks.gif" alt="Blocks">
+                            <span class="demo-label">Blocks</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_balance.gif" alt="Balance">
+                            <span class="demo-label">Balance</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_coffee.gif" alt="Coffee">
+                            <span class="demo-label">Coffee</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_grow.gif" alt="Grow">
+                            <span class="demo-label">Grow</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_boil.gif" alt="Boil">
+                            <span class="demo-label">Boil</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_fan.gif" alt="Fan">
+                            <span class="demo-label">Fan</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_circuit.gif" alt="Circuit">
+                            <span class="demo-label">Circuit</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_laser.gif" alt="Laser">
+                            <span class="demo-label">Laser</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_ants.gif" alt="Ants">
+                            <span class="demo-label">Ants</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_domino.gif" alt="Domino">
+                            <span class="demo-label">Domino</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_float.gif" alt="Float">
+                            <span class="demo-label">Float</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_barrier.gif" alt="Barrier">
+                            <span class="demo-label">Barrier</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_magic_bin.gif" alt="Magic Bin">
+                            <span class="demo-label">Magic Bin</span>
+                        </div>
+                        <div class="demo-gif-item">
+                            <img src="assets/gifs/pybullet_switch.gif" alt="Switch">
+                            <span class="demo-label">Switch</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about">
+            <div class="container">
+                <h2>About MARA RoboSim</h2>
+                <p class="intro-text">A benchmark for evaluating agents that learn world models and discover causal structure through embodied interaction.</p>
+                <div class="about-content">
+                    <p>MARA RoboSim is a benchmark suite for embodied world model learning and causal discovery. It targets agents that must autonomously discover how their environment works &mdash; learning predictive models, identifying causal relationships between actions and outcomes, and forming abstractions that support planning and generalization. The benchmark is part of the MARA (Modeling, Abstraction, Reasoning, and Action) project, which aims to build agents capable of scientific reasoning about novel environments.</p>
+                    <p>The suite comprises 15 3D robotic manipulation environments built on PyBullet, each presenting distinct challenges for world model learning. A Fetch robot must interact with various objects &mdash; from stacking blocks and pouring liquids to completing circuits and redirecting lasers &mdash; requiring agents to discover diverse physical and causal phenomena such as contact mechanics, fluid dynamics, electrical connectivity, and chain reactions.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="environments">
+            <div class="container">
+                <h2>Environments</h2>
+                <div class="env-grid">
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_cover.gif" alt="Cover Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Cover</h3>
+                            <p>Pick and place blocks onto target regions</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_blocks.gif" alt="Blocks Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Blocks</h3>
+                            <p>Stack blocks into specified configurations</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_balance.gif" alt="Balance Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Balance</h3>
+                            <p>Balance blocks on a beam structure</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_coffee.gif" alt="Coffee Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Coffee</h3>
+                            <p>Manipulate a jug through a coffee preparation sequence</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_grow.gif" alt="Grow Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Grow</h3>
+                            <p>Pour water from jugs into cups to grow plants</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_boil.gif" alt="Boil Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Boil</h3>
+                            <p>Heat water on burners to reach boiling temperature</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_fan.gif" alt="Fan Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Fan</h3>
+                            <p>Use fans to blow objects to target locations</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_circuit.gif" alt="Circuit Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Circuit</h3>
+                            <p>Arrange components to complete electrical circuits</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_laser.gif" alt="Laser Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Laser</h3>
+                            <p>Position mirrors to redirect laser beams to targets</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_ants.gif" alt="Ants Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Ants</h3>
+                            <p>Guide ant-like agents to collect and transport food</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_domino.gif" alt="Domino Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Domino</h3>
+                            <p>Arrange dominoes to create chain reactions</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_float.gif" alt="Float Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Float</h3>
+                            <p>Raise water levels to float objects to target heights</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_barrier.gif" alt="Barrier Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Barrier</h3>
+                            <p>Navigate around barriers to reach goal positions</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_magic_bin.gif" alt="Magic Bin Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Magic Bin</h3>
+                            <p>Sort objects into the correct bins</p>
+                        </div>
+                    </div>
+                    <div class="env-card">
+                        <div class="env-card-gif">
+                            <img src="assets/gifs/pybullet_switch.gif" alt="Switch Environment">
+                        </div>
+                        <div class="env-card-body">
+                            <h3>Switch</h3>
+                            <p>Toggle switches to turn on lights</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>MARA RoboSim | Basis Research</p>
+            <p><a href="https://github.com/BasisResearch/predicators/tree/mara" target="_blank">View on GitHub</a></p>
+        </div>
+    </footer>
+</body>
+</html>
