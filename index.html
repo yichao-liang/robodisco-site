@@ -137,6 +137,26 @@
             height: auto;
             display: block;
             object-fit: contain;
+            transition: opacity 0.2s ease;
+        }
+
+        .demo-gif-item.gif-paused::after {
+            content: '\25B6';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.5);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 2;
+            padding-left: 2px;
         }
 
         .demo-label {
@@ -228,6 +248,26 @@
             height: auto;
             display: block;
             object-fit: contain;
+            transition: opacity 0.2s ease;
+        }
+
+        .env-card-gif.gif-paused::after {
+            content: '\25B6';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 2;
+            padding-left: 3px;
         }
 
         .env-card-body {
@@ -587,5 +627,58 @@
             <p><a href="https://github.com/BasisResearch/predicators/tree/mara" target="_blank">View on GitHub</a></p>
         </div>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Extract first frame from each GIF and set up hover-to-play
+            function setupGifHover(container, imgSelector) {
+                const items = document.querySelectorAll(container);
+                items.forEach(item => {
+                    const img = item.querySelector(imgSelector);
+                    if (!img) return;
+                    const gifSrc = img.src;
+
+                    // Draw first frame to canvas to get a static image
+                    const tempImg = new Image();
+                    tempImg.crossOrigin = 'anonymous';
+                    tempImg.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = tempImg.naturalWidth;
+                        canvas.height = tempImg.naturalHeight;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(tempImg, 0, 0);
+                        const staticSrc = canvas.toDataURL('image/png');
+
+                        // Set static image and mark as paused
+                        img.src = staticSrc;
+                        item.classList.add('gif-paused');
+                        item.setAttribute('data-gif', gifSrc);
+                        item.setAttribute('data-static', staticSrc);
+                    };
+                    tempImg.src = gifSrc;
+
+                    item.addEventListener('mouseenter', function() {
+                        const gif = item.getAttribute('data-gif');
+                        if (gif) {
+                            img.src = gif + '?t=' + Date.now();
+                            item.classList.remove('gif-paused');
+                        }
+                    });
+
+                    item.addEventListener('mouseleave', function() {
+                        const staticImg = item.getAttribute('data-static');
+                        if (staticImg) {
+                            img.src = staticImg;
+                            item.classList.add('gif-paused');
+                        }
+                    });
+                });
+            }
+
+            // Hero grid items
+            setupGifHover('.demo-gif-item', 'img');
+            // Environment card items
+            setupGifHover('.env-card-gif', 'img');
+        });
+    </script>
 </body>
 </html>
