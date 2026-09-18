@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RoboDisco Ice Rink: Push sliding tiles onto matching targets across a low-friction rink">
+    <title>Ice Rink - RoboDisco</title>
+    <link rel="stylesheet" href="../assets/site.css">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="../index.html" class="logo">Robo<span>Disco</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html#about">About</a></li>
+                    <li><a href="../index.html#environments">Environments</a></li>
+                    <li><a href="https://github.com/BasisResearch/predicators/tree/master/predicators/envs" target="_blank">GitHub</a></li>
+                    <li><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">&#9790;</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div style="background: var(--accent); color: #fff; text-align: center; padding: 0.5rem; font-size: 0.85rem; font-weight: 600;">Work in Progress</div>
+    <main class="env-page">
+        <div class="container">
+            <p class="breadcrumb"><a href="../index.html#environments">&larr; All environments</a></p>
+            <h1>Ice Rink</h1>
+            <p class="env-id">pybullet_icerink</p>
+            <p class="lede">Push coloured tiles across an ice rink so each comes to rest on its matching target. Each colour slides with its own hidden friction, and a dark strip brakes tiles that cross it.</p>
+            <div class="media-grid">
+                <figure class="media-card">
+                    <video src="../assets/videos/icerink.mp4" poster="../assets/thumbnails/icerink.png" autoplay loop muted playsinline controls></video>
+                    <figcaption><strong>Solving a test task.</strong> Planned with ground-truth process models: two pushes slide the tiles onto their targets. Slowed down 2.5x.</figcaption>
+                </figure>
+                <figure class="media-card">
+                    <img src="../assets/init/icerink.gif" alt="Initial states of several Ice Rink tasks">
+                    <figcaption><strong>Initial states.</strong> Starting layouts of up to four training and eight test tasks; repeated layouts are shown once.</figcaption>
+                </figure>
+            </div>
+            <p class="source-link"><a href="https://github.com/BasisResearch/predicators/blob/master/predicators/envs/pybullet_icerink.py" target="_blank">Environment source</a> &middot; run with <code>python predicators/main.py --env pybullet_icerink</code></p>
+            <nav class="pager">
+                <a href="crane.html">&larr; Crane</a>
+                <a href="launcher.html">Launcher &rarr;</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>RoboDisco</p>
+            <p><a href="https://github.com/BasisResearch/predicators/tree/master/predicators/envs" target="_blank">View on GitHub</a></p>
+        </div>
+    </footer>
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.querySelector('.theme-toggle');
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+                btn.innerHTML = '&#9728;';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                btn.innerHTML = '&#9790;';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.querySelector('.theme-toggle');
+            btn.innerHTML = document.documentElement.getAttribute('data-theme') === 'dark'
+                ? '&#9790;' : '&#9728;';
+            // Swap the still thumbnail for the solve loop while hovered.
+            document.querySelectorAll('[data-gif]').forEach(el => {
+                const box = el.querySelector('.gif-paused') || el;
+                const img = el.querySelector('img');
+                const still = img.src;
+                el.addEventListener('mouseenter', () => {
+                    img.src = el.getAttribute('data-gif') + '?t=' + Date.now();
+                    box.classList.remove('gif-paused');
+                });
+                el.addEventListener('mouseleave', () => {
+                    img.src = still;
+                    box.classList.add('gif-paused');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

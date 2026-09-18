@@ -5,251 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="RoboDisco: Robot Model Discovery Benchmark for embodied world-model learning and causal discovery">
     <title>RoboDisco: Robot Model Discovery Benchmark</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f1f5f9;
-            --bg-card: #f1f5f9;
-            --accent: #0284c7;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --glow: rgba(2, 132, 199, 0.12);
+    <link rel="stylesheet" href="assets/site.css">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
         }
-
-        [data-theme="dark"] {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: #1e293b;
-            --accent: #38bdf8;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --border: #334155;
-            --glow: rgba(56, 189, 248, 0.15);
-        }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: var(--text-primary);
-            background: var(--bg-primary);
-        }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-
-        /* ── Header ── */
-        header {
-            background: var(--bg-primary);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-
-        header .container { display: flex; justify-content: space-between; align-items: center; }
-
-        .logo {
-            font-size: 1.15rem; font-weight: 700;
-            color: var(--text-primary); text-decoration: none; letter-spacing: -0.02em;
-        }
-        .logo span { color: var(--accent); }
-
-        .nav-links { list-style: none; display: flex; gap: 2rem; align-items: center; }
-
-        .theme-toggle {
-            background: none; border: 1px solid var(--border); border-radius: 6px;
-            color: var(--text-secondary); cursor: pointer; padding: 0.35rem 0.6rem;
-            font-size: 1rem; line-height: 1; transition: color 0.2s, border-color 0.2s;
-        }
-        .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
-        .nav-links a {
-            color: var(--text-secondary); text-decoration: none;
-            font-size: 0.9rem; font-weight: 500; transition: color 0.2s;
-        }
-        .nav-links a:hover { color: var(--accent); }
-
-        /* ── Hero ── */
-        .hero { padding: 2.5rem 0 2rem; text-align: center; }
-
-        .hero h1 {
-            font-size: 3rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-        }
-
-        .hero .subtitle {
-            font-size: 1.15rem; color: var(--text-secondary);
-            max-width: 640px; margin: 0 auto 1rem; line-height: 1.7;
-        }
-
-        .authors {
-            display: flex; flex-wrap: wrap; justify-content: center;
-            gap: 0.25rem 1.5rem; margin: 1.5rem auto 0.5rem;
-            max-width: 700px;
-        }
-        .author { font-size: 0.95rem; color: var(--text-secondary); }
-        .author sup { font-size: 0.65em; color: var(--text-muted); }
-        .affiliations {
-            font-size: 0.8rem; color: var(--text-muted);
-            margin: 0.5rem auto 1.5rem; max-width: 700px;
-        }
-        .affiliations sup { font-size: 0.75em; }
-
-        .hero .hover-hint {
-            font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2.5rem;
-        }
-
-        /* ── GIF Grid (hero) ── */
-        .gif-grid {
-            display: grid; grid-template-columns: repeat(5, 1fr);
-            gap: 10px; margin-bottom: 1rem;
-        }
-
-        .gif-cell {
-            position: relative; border-radius: 8px; overflow: hidden;
-            background: var(--bg-secondary); border: 1px solid var(--border);
-            transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
-            cursor: default;
-        }
-        .gif-cell:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 20px var(--glow);
-            transform: translateY(-2px);
-        }
-        .gif-cell img { width: 100%; height: auto; display: block; }
-
-        .gif-cell .label {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            padding: 1.5rem 0.5rem 0.35rem;
-            background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
-            color: #f1f5f9; font-size: 0.7rem; font-weight: 600;
-            text-align: center; letter-spacing: 0.03em; text-transform: uppercase;
-        }
-
-        .gif-cell.gif-paused::after {
-            content: '\25B6'; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); font-size: 1.2rem; color: white;
-            background: rgba(0,0,0,0.45); width: 36px; height: 36px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            pointer-events: none; padding-left: 2px; opacity: 0.8; transition: opacity 0.2s;
-        }
-        .gif-cell:hover.gif-paused::after { opacity: 0; }
-
-        /* ── About ── */
-        #about { padding: 4rem 0; border-top: 1px solid var(--border); }
-
-        .section-label {
-            font-size: 0.8rem; font-weight: 600; color: var(--accent);
-            text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;
-        }
-
-        #about h2 {
-            font-size: 1.75rem; font-weight: 700;
-            margin-bottom: 1.5rem; letter-spacing: -0.02em;
-        }
-
-        #about p {
-            font-size: 1.05rem; color: var(--text-secondary);
-            line-height: 1.85; margin-bottom: 1.25rem; max-width: 800px;
-        }
-
-        /* ── Environments ── */
-        #environments {
-            padding: 4rem 0; background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-        }
-
-        #environments h2 {
-            font-size: 1.75rem; font-weight: 700;
-            margin-bottom: 2rem; letter-spacing: -0.02em;
-        }
-
-        .env-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;
-        }
-
-        .env-card {
-            background: var(--bg-primary); border: 1px solid var(--border);
-            border-radius: 10px; overflow: hidden;
-            transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
-        }
-        .env-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 24px var(--glow);
-            transform: translateY(-3px);
-        }
-
-        .env-card-gif {
-            position: relative; background: var(--bg-secondary); overflow: hidden;
-        }
-        .env-card-gif img { width: 100%; height: auto; display: block; }
-
-        .env-card-gif.gif-paused::after {
-            content: '\25B6'; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); font-size: 1.4rem; color: white;
-            background: rgba(0,0,0,0.45); width: 44px; height: 44px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            pointer-events: none; padding-left: 3px; opacity: 0.8; transition: opacity 0.2s;
-        }
-        .env-card:hover .env-card-gif.gif-paused::after { opacity: 0; }
-
-        .env-card-body { padding: 1.25rem 1.5rem; }
-        .env-card-body h3 {
-            font-size: 1.1rem; font-weight: 600;
-            margin-bottom: 0.3rem; color: var(--text-primary);
-        }
-        .env-card-body p {
-            font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin: 0;
-        }
-
-        /* ── Footer ── */
-        footer { border-top: 1px solid var(--border); padding: 2rem 0; text-align: center; }
-        footer p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; }
-        footer a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
-        footer a:hover { color: var(--text-primary); }
-
-        /* ── Responsive ── */
-        @media (max-width: 1024px) { .env-grid { grid-template-columns: repeat(2, 1fr); } }
-
-        @media (max-width: 768px) {
-            header .container { flex-direction: column; gap: 0.75rem; }
-            .nav-links { gap: 1.25rem; }
-            .hero { padding: 3rem 0 1.5rem; }
-            .hero h1 { font-size: 2rem; }
-            .hero .subtitle { font-size: 1rem; }
-            .gif-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-            .gif-cell .label { font-size: 0.55rem; padding: 1rem 0.25rem 0.25rem; }
-            .env-grid { grid-template-columns: 1fr; }
-            #about h2, #environments h2 { font-size: 1.4rem; }
-        }
-    </style>
+    </script>
 </head>
 <body>
     <header>
         <div class="container">
-            <a href="#" class="logo">Robo<span>Disco</span></a>
+            <a href="index.html" class="logo">Robo<span>Disco</span></a>
             <nav>
                 <ul class="nav-links">
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#environments">Environments</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#environments">Environments</a></li>
                     <li><a href="https://github.com/BasisResearch/predicators/tree/master/predicators/envs" target="_blank">GitHub</a></li>
                     <li><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">&#9790;</button></li>
                 </ul>
             </nav>
         </div>
     </header>
-
     <div style="background: var(--accent); color: #fff; text-align: center; padding: 0.5rem; font-size: 0.85rem; font-weight: 600;">Work in Progress</div>
-
     <main>
         <section class="hero">
             <div class="container">
@@ -263,23 +40,31 @@
                     <span class="author">and the MARA team</span>
                 </div>
                 <p class="affiliations"><sup>1</sup><a href="https://www.basis.ai/" target="_blank">Basis</a>, <sup>2</sup><a href="https://www.cam.ac.uk/" target="_blank">University of Cambridge</a>, <sup>3</sup><a href="https://www.turing.ac.uk/" target="_blank">The Alan Turing Institute</a>, <sup>4</sup><a href="https://www.princeton.edu/" target="_blank">Princeton University</a>, <sup>5</sup><a href="https://www.cornell.edu/" target="_blank">Cornell University</a></p>
-                <p class="subtitle">Robot Model Discovery Benchmark — embodied world-model learning and causal discovery</p>
+                <p class="subtitle">Robot Model Discovery Benchmark &mdash; embodied world-model learning and causal discovery</p>
+                <p class="hover-hint">Hover to watch a solve, click for the environment page</p>
                 <div class="gif-grid">
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_ants.gif"><img src="assets/thumbnails/pybullet_ants.png" alt="Ants"><span class="label">Ants</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_balance.gif"><img src="assets/thumbnails/pybullet_balance.png" alt="Balance"><span class="label">Balance</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_barrier.gif"><img src="assets/thumbnails/pybullet_barrier.png" alt="Barrier"><span class="label">Barrier</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_blocks.gif"><img src="assets/thumbnails/pybullet_blocks.png" alt="Blocks"><span class="label">Blocks</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_boil.gif"><img src="assets/thumbnails/pybullet_boil.png" alt="Boil"><span class="label">Boil</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_circuit.gif"><img src="assets/thumbnails/pybullet_circuit.png" alt="Circuit"><span class="label">Circuit</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_coffee.gif"><img src="assets/thumbnails/pybullet_coffee.png" alt="Coffee"><span class="label">Coffee</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_cover.gif"><img src="assets/thumbnails/pybullet_cover.png" alt="Cover"><span class="label">Cover</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_domino.gif"><img src="assets/thumbnails/pybullet_domino.png" alt="Domino"><span class="label">Domino</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_fan.gif"><img src="assets/thumbnails/pybullet_fan.png" alt="Fan"><span class="label">Fan</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_float.gif"><img src="assets/thumbnails/pybullet_float.png" alt="Float"><span class="label">Float</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_grow.gif"><img src="assets/thumbnails/pybullet_grow.png" alt="Grow"><span class="label">Grow</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_laser.gif"><img src="assets/thumbnails/pybullet_laser.png" alt="Laser"><span class="label">Laser</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_magic_bin.gif"><img src="assets/thumbnails/pybullet_magic_bin.png" alt="Magic Bin"><span class="label">Magic Bin</span></div>
-                    <div class="gif-cell gif-paused" data-gif="assets/gifs/pybullet_switch.gif"><img src="assets/thumbnails/pybullet_switch.png" alt="Switch"><span class="label">Switch</span></div>
+                    <a class="gif-cell gif-paused" href="envs/balloons.html" data-gif="assets/gifs/balloons.gif"><img src="assets/thumbnails/balloons.png" alt="Balloons"><span class="label">Balloons</span></a>
+                    <a class="gif-cell gif-paused" href="envs/boil.html" data-gif="assets/gifs/boil.gif"><img src="assets/thumbnails/boil.png" alt="Boil"><span class="label">Boil</span></a>
+                    <a class="gif-cell gif-paused" href="envs/bridge.html" data-gif="assets/gifs/bridge.gif"><img src="assets/thumbnails/bridge.png" alt="Bridge"><span class="label">Bridge</span></a>
+                    <a class="gif-cell gif-paused" href="envs/domino.html" data-gif="assets/gifs/domino.gif"><img src="assets/thumbnails/domino.png" alt="Domino"><span class="label">Domino</span></a>
+                    <a class="gif-cell gif-paused" href="envs/fan.html" data-gif="assets/gifs/fan.gif"><img src="assets/thumbnails/fan.png" alt="Fan"><span class="label">Fan</span></a>
+                    <a class="gif-cell gif-paused" href="envs/busyboard.html" data-gif="assets/gifs/busyboard.gif"><img src="assets/thumbnails/busyboard.png" alt="Busyboard"><span class="label">Busyboard</span></a>
+                    <a class="gif-cell gif-paused" href="envs/crane.html" data-gif="assets/gifs/crane.gif"><img src="assets/thumbnails/crane.png" alt="Crane"><span class="label">Crane</span></a>
+                    <a class="gif-cell gif-paused" href="envs/icerink.html" data-gif="assets/gifs/icerink.gif"><img src="assets/thumbnails/icerink.png" alt="Ice Rink"><span class="label">Ice Rink</span></a>
+                    <a class="gif-cell gif-paused" href="envs/launcher.html" data-gif="assets/gifs/launcher.gif"><img src="assets/thumbnails/launcher.png" alt="Launcher"><span class="label">Launcher</span></a>
+                    <a class="gif-cell gif-paused" href="envs/magnets.html" data-gif="assets/gifs/magnets.gif"><img src="assets/thumbnails/magnets.png" alt="Magnets"><span class="label">Magnets</span></a>
+                    <a class="gif-cell gif-paused" href="envs/ants.html" data-gif="assets/gifs/ants.gif"><img src="assets/thumbnails/ants.png" alt="Ants"><span class="label">Ants</span></a>
+                    <a class="gif-cell gif-paused" href="envs/balance.html" data-gif="assets/gifs/balance.gif"><img src="assets/thumbnails/balance.png" alt="Balance"><span class="label">Balance</span></a>
+                    <a class="gif-cell gif-paused" href="envs/barrier.html" data-gif="assets/gifs/barrier.gif"><img src="assets/thumbnails/barrier.png" alt="Barrier"><span class="label">Barrier</span></a>
+                    <a class="gif-cell gif-paused" href="envs/blocks.html" data-gif="assets/gifs/blocks.gif"><img src="assets/thumbnails/blocks.png" alt="Blocks"><span class="label">Blocks</span></a>
+                    <a class="gif-cell gif-paused" href="envs/circuit.html" data-gif="assets/gifs/circuit.gif"><img src="assets/thumbnails/circuit.png" alt="Circuit"><span class="label">Circuit</span></a>
+                    <a class="gif-cell gif-paused" href="envs/coffee.html" data-gif="assets/gifs/coffee.gif"><img src="assets/thumbnails/coffee.png" alt="Coffee"><span class="label">Coffee</span></a>
+                    <a class="gif-cell gif-paused" href="envs/cover.html" data-gif="assets/gifs/cover.gif"><img src="assets/thumbnails/cover.png" alt="Cover"><span class="label">Cover</span></a>
+                    <a class="gif-cell gif-paused" href="envs/float.html" data-gif="assets/gifs/float.gif"><img src="assets/thumbnails/float.png" alt="Float"><span class="label">Float</span></a>
+                    <a class="gif-cell gif-paused" href="envs/grow.html" data-gif="assets/gifs/grow.gif"><img src="assets/thumbnails/grow.png" alt="Grow"><span class="label">Grow</span></a>
+                    <a class="gif-cell gif-paused" href="envs/laser.html" data-gif="assets/gifs/laser.gif"><img src="assets/thumbnails/laser.png" alt="Laser"><span class="label">Laser</span></a>
+                    <a class="gif-cell gif-paused" href="envs/magic-bin.html" data-gif="assets/gifs/magic-bin.gif"><img src="assets/thumbnails/magic-bin.png" alt="Magic Bin"><span class="label">Magic Bin</span></a>
+                    <a class="gif-cell gif-paused" href="envs/switch.html" data-gif="assets/gifs/switch.gif"><img src="assets/thumbnails/switch.png" alt="Switch"><span class="label">Switch</span></a>
                 </div>
             </div>
         </section>
@@ -291,6 +76,7 @@
                 <p>RoboDisco (Robot Model Discovery Benchmark) is a benchmark suite for embodied world-model learning and causal discovery. It targets agents that must autonomously discover how their environment works &mdash; learning predictive models, identifying causal relationships between actions and outcomes, and forming abstractions that support planning and generalization.</p>
                 <p>The benchmark is developed as part of the MARA (Modeling, Abstraction, Reasoning, and Action) project, which aims to build agents capable of scientific reasoning about novel environments.</p>
                 <p>The suite comprises a diverse set of 3D robotic manipulation environments built on PyBullet, each presenting distinct challenges for world model learning. A Fetch robot must interact with various objects &mdash; from stacking blocks and pouring liquids to completing circuits and redirecting lasers &mdash; requiring agents to discover diverse physical and causal phenomena such as contact mechanics, fluid dynamics, electrical connectivity, and chain reactions.</p>
+                <p>Every clip on this page shows a task being solved, by planning with ground-truth models or by a scripted skill sequence. Each environment page also shows the initial states of several tasks.</p>
             </div>
         </section>
 
@@ -298,67 +84,102 @@
             <div class="container">
                 <p class="section-label">Environments</p>
                 <h2>Task Suite</h2>
+                <h3 class="env-subheading">Benchmark domains</h3>
                 <div class="env-grid">
-                    <div class="env-card" data-gif="assets/gifs/pybullet_ants.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_ants.png" alt="Ants"></div>
-                        <div class="env-card-body"><h3>Ants</h3><p>Sort food by separating those that attract ants from those that do not</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_balance.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_balance.png" alt="Balance"></div>
-                        <div class="env-card-body"><h3>Balance</h3><p>Activate the balance machine by pressing the button when the blocks on both sides are equal</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_barrier.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_barrier.png" alt="Barrier"></div>
-                        <div class="env-card-body"><h3>Barrier</h3><p>Barriers that can rise and fall</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_blocks.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_blocks.png" alt="Blocks"></div>
-                        <div class="env-card-body"><h3>Blocks</h3><p>Stack blocks into specified configurations</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_boil.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_boil.png" alt="Boil"></div>
-                        <div class="env-card-body"><h3>Boil</h3><p>Boil jugs of water</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_circuit.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_circuit.png" alt="Circuit"></div>
-                        <div class="env-card-body"><h3>Circuit</h3><p>Light up the bulb by completing the electrical circuit</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_coffee.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_coffee.png" alt="Coffee"></div>
-                        <div class="env-card-body"><h3>Coffee</h3><p>Fill the cups with coffee by plugging in the power cord, filling the jug with coffee and pouring</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_cover.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_cover.png" alt="Cover"></div>
-                        <div class="env-card-body"><h3>Cover</h3><p>Pick and place blocks onto target regions</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_domino.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_domino.png" alt="Domino"></div>
-                        <div class="env-card-body"><h3>Domino</h3><p>Hit the red targets by pushing green blocks and strategically placing blue blocks and yellow pivots</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_fan.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_fan.png" alt="Fan"></div>
-                        <div class="env-card-body"><h3>Fan</h3><p>Guide the ball to the target by controlling the fans</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_float.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_float.png" alt="Float"></div>
-                        <div class="env-card-body"><h3>Float</h3><p>Retrieve the floating block by raising the water level using heavy blocks</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_grow.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_grow.png" alt="Grow"></div>
-                        <div class="env-card-body"><h3>Grow</h3><p>Grow plants in pots by pouring fertilizer from jugs of the same color</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_laser.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_laser.png" alt="Laser"></div>
-                        <div class="env-card-body"><h3>Laser</h3><p>Hit the red targets with the laser by placing mirrors that can either reflect or reflect + pass the beam</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_magic_bin.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_magic_bin.png" alt="Magic Bin"></div>
-                        <div class="env-card-body"><h3>Magic Bin</h3><p>A magic bin that can make objects inside disappear</p></div>
-                    </div>
-                    <div class="env-card" data-gif="assets/gifs/pybullet_switch.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/pybullet_switch.png" alt="Switch"></div>
-                        <div class="env-card-body"><h3>Switch</h3><p>The effect of a switch changes depend on some hidden state</p></div>
-                    </div>
+                    <a class="env-card" href="envs/balloons.html" data-gif="assets/gifs/balloons.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/balloons.png" alt="Balloons" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Balloons<span class="badge">Benchmark</span></h3><div class="env-id">pybullet_balloons</div><p>Free clipped balloons so they lift a box to hang inside a target band</p></div>
+                    </a>
+                    <a class="env-card" href="envs/boil.html" data-gif="assets/gifs/boil.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/boil.png" alt="Boil" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Boil<span class="badge">Benchmark</span></h3><div class="env-id">pybullet_boil</div><p>Fill jugs at a faucet and boil them on a burner without spilling</p></div>
+                    </a>
+                    <a class="env-card" href="envs/bridge.html" data-gif="assets/gifs/bridge.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/bridge.png" alt="Bridge" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Bridge<span class="badge">Benchmark</span></h3><div class="env-id">pybullet_bridge</div><p>Glue identical blocks into an n-shaped bridge whose joints cure over time</p></div>
+                    </a>
+                    <a class="env-card" href="envs/domino.html" data-gif="assets/gifs/domino.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/domino.png" alt="Domino" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Domino<span class="badge">Benchmark</span></h3><div class="env-id">pybullet_domino</div><p>Place as few dominoes as possible so a pushed chain topples the target</p></div>
+                    </a>
+                    <a class="env-card" href="envs/fan.html" data-gif="assets/gifs/fan.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/fan.png" alt="Fan" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Fan<span class="badge">Benchmark</span></h3><div class="env-id">pybullet_fan</div><p>Switch banks of fans to blow a ball through a walled grid to a target</p></div>
+                    </a>
+                </div>
+                <h3 class="env-subheading">Continual-learning domains</h3>
+                <div class="env-grid">
+                    <a class="env-card" href="envs/busyboard.html" data-gif="assets/gifs/busyboard.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/busyboard.png" alt="Busyboard" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Busyboard</h3><div class="env-id">pybullet_busyboard</div><p>Light the right lamps on a board of switches with hidden wiring</p></div>
+                    </a>
+                    <a class="env-card" href="envs/crane.html" data-gif="assets/gifs/crane.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/crane.png" alt="Crane" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Crane</h3><div class="env-id">pybullet_crane</div><p>Swing a hinged ram to knock a crate onto a landing pad</p></div>
+                    </a>
+                    <a class="env-card" href="envs/icerink.html" data-gif="assets/gifs/icerink.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/icerink.png" alt="Ice Rink" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Ice Rink</h3><div class="env-id">pybullet_icerink</div><p>Push sliding tiles onto matching targets across a low-friction rink</p></div>
+                    </a>
+                    <a class="env-card" href="envs/launcher.html" data-gif="assets/gifs/launcher.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/launcher.png" alt="Launcher" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Launcher</h3><div class="env-id">pybullet_launcher</div><p>Cock a spring launcher to knock only the top block off a tower</p></div>
+                    </a>
+                    <a class="env-card" href="envs/magnets.html" data-gif="assets/gifs/magnets.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/magnets.png" alt="Magnets" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Magnets</h3><div class="env-id">pybullet_magnets</div><p>Steer coloured pieces into slots with a magnetic wand</p></div>
+                    </a>
+                </div>
+                <h3 class="env-subheading">Further domains</h3>
+                <div class="env-grid">
+                    <a class="env-card" href="envs/ants.html" data-gif="assets/gifs/ants.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/ants.png" alt="Ants" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Ants</h3><div class="env-id">pybullet_ants</div><p>Sort food by whether it attracts ants, stacking same-coloured items</p></div>
+                    </a>
+                    <a class="env-card" href="envs/balance.html" data-gif="assets/gifs/balance.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/balance.png" alt="Balance" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Balance</h3><div class="env-id">pybullet_balance</div><p>Equalise two plates on a beam, then press the button</p></div>
+                    </a>
+                    <a class="env-card" href="envs/barrier.html" data-gif="assets/gifs/barrier.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/barrier.png" alt="Barrier" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Barrier</h3><div class="env-id">pybullet_barrier</div><p>Raise and lower barriers with the switches that control them</p></div>
+                    </a>
+                    <a class="env-card" href="envs/blocks.html" data-gif="assets/gifs/blocks.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/blocks.png" alt="Blocks" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Blocks</h3><div class="env-id">pybullet_blocks</div><p>Rearrange blocks into the requested towers</p></div>
+                    </a>
+                    <a class="env-card" href="envs/circuit.html" data-gif="assets/gifs/circuit.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/circuit.png" alt="Circuit" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Circuit</h3><div class="env-id">pybullet_circuit</div><p>Wire a battery to a bulb and switch it on</p></div>
+                    </a>
+                    <a class="env-card" href="envs/coffee.html" data-gif="assets/gifs/coffee.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/coffee.png" alt="Coffee" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Coffee</h3><div class="env-id">pybullet_coffee</div><p>Brew a jug of coffee and pour it into every cup</p></div>
+                    </a>
+                    <a class="env-card" href="envs/cover.html" data-gif="assets/gifs/cover.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/cover.png" alt="Cover" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Cover</h3><div class="env-id">pybullet_cover</div><p>Place blocks so they cover target regions</p></div>
+                    </a>
+                    <a class="env-card" href="envs/float.html" data-gif="assets/gifs/float.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/float.png" alt="Float" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Float</h3><div class="env-id">pybullet_float</div><p>Raise the water level to lift a floating block within reach</p></div>
+                    </a>
+                    <a class="env-card" href="envs/grow.html" data-gif="assets/gifs/grow.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/grow.png" alt="Grow" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Grow</h3><div class="env-id">pybullet_grow</div><p>Grow plants by pouring from the jug of matching colour</p></div>
+                    </a>
+                    <a class="env-card" href="envs/laser.html" data-gif="assets/gifs/laser.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/laser.png" alt="Laser" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Laser</h3><div class="env-id">pybullet_laser</div><p>Place mirrors to route a laser beam onto the targets</p></div>
+                    </a>
+                    <a class="env-card" href="envs/magic-bin.html" data-gif="assets/gifs/magic-bin.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/magic-bin.png" alt="Magic Bin" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Magic Bin</h3><div class="env-id">pybullet_magic_bin</div><p>Make blocks vanish by dropping them in a bin that a switch activates</p></div>
+                    </a>
+                    <a class="env-card" href="envs/switch.html" data-gif="assets/gifs/switch.gif">
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/switch.png" alt="Switch" loading="lazy"></div>
+                        <div class="env-card-body"><h3>Switch</h3><div class="env-id">pybullet_switch</div><p>Set a light&#x27;s colour with a power switch and a colour switch</p></div>
+                    </a>
                 </div>
             </div>
         </section>
@@ -370,9 +191,7 @@
             <p><a href="https://github.com/BasisResearch/predicators/tree/master/predicators/envs" target="_blank">View on GitHub</a></p>
         </div>
     </footer>
-
     <script>
-        // Theme toggle
         function toggleTheme() {
             const html = document.documentElement;
             const btn = document.querySelector('.theme-toggle');
@@ -386,52 +205,22 @@
                 localStorage.setItem('theme', 'dark');
             }
         }
-        // Restore saved theme
-        (function() {
-            const saved = localStorage.getItem('theme');
-            if (saved === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            }
-        })();
-
         document.addEventListener('DOMContentLoaded', function() {
-            // Update toggle icon based on current theme
             const btn = document.querySelector('.theme-toggle');
-            if (document.documentElement.getAttribute('data-theme') === 'dark') {
-                btn.innerHTML = '&#9790;';
-            } else {
-                btn.innerHTML = '&#9728;';
-            }
-            // Hero grid: hover on the cell itself
-            document.querySelectorAll('.gif-cell').forEach(cell => {
-                const img = cell.querySelector('img');
-                const gifSrc = cell.getAttribute('data-gif');
-                const staticSrc = img.src;
-
-                cell.addEventListener('mouseenter', function() {
-                    img.src = gifSrc + '?t=' + Date.now();
-                    cell.classList.remove('gif-paused');
+            btn.innerHTML = document.documentElement.getAttribute('data-theme') === 'dark'
+                ? '&#9790;' : '&#9728;';
+            // Swap the still thumbnail for the solve loop while hovered.
+            document.querySelectorAll('[data-gif]').forEach(el => {
+                const box = el.querySelector('.gif-paused') || el;
+                const img = el.querySelector('img');
+                const still = img.src;
+                el.addEventListener('mouseenter', () => {
+                    img.src = el.getAttribute('data-gif') + '?t=' + Date.now();
+                    box.classList.remove('gif-paused');
                 });
-                cell.addEventListener('mouseleave', function() {
-                    img.src = staticSrc;
-                    cell.classList.add('gif-paused');
-                });
-            });
-
-            // Env cards: hover on the whole card, swap the gif inside
-            document.querySelectorAll('.env-card').forEach(card => {
-                const gifContainer = card.querySelector('.env-card-gif');
-                const img = gifContainer.querySelector('img');
-                const gifSrc = card.getAttribute('data-gif');
-                const staticSrc = img.src;
-
-                card.addEventListener('mouseenter', function() {
-                    img.src = gifSrc + '?t=' + Date.now();
-                    gifContainer.classList.remove('gif-paused');
-                });
-                card.addEventListener('mouseleave', function() {
-                    img.src = staticSrc;
-                    gifContainer.classList.add('gif-paused');
+                el.addEventListener('mouseleave', () => {
+                    img.src = still;
+                    box.classList.add('gif-paused');
                 });
             });
         });
