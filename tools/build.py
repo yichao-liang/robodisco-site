@@ -140,11 +140,8 @@ INDEX_BODY = """    <main>
 
 """
 
-GROUPS = [
-    ("benchmark", "Benchmark domains"),
-    ("recent", "Continual-learning domains"),
-    ("classic", "Further domains"),
-]
+# Display order of the environment grid: the benchmark domains first.
+GROUP_ORDER = ("benchmark", "recent", "classic")
 
 
 def esc(text: str) -> str:
@@ -170,13 +167,10 @@ def card(env: dict) -> str:
 
 
 def build_index(envs: list) -> str:
-    groups = []
-    for key, heading in GROUPS:
-        members = [e for e in envs if e["group"] == key]
-        cards = "\n".join(card(e) for e in members)
-        groups.append(f'                <h3 class="env-subheading">{heading}</h3>\n'
-                      f'                <div class="env-grid">\n{cards}\n'
-                      f'                </div>')
+    ordered = [e for key in GROUP_ORDER for e in envs if e["group"] == key]
+    cards = "\n".join(card(e) for e in ordered)
+    grid = (f'                <div class="env-grid">\n{cards}\n'
+            f'                </div>')
     page = HEAD.format(
         description="RoboDisco: Robot Model Discovery Benchmark for embodied "
         "world-model learning and causal discovery",
@@ -184,7 +178,7 @@ def build_index(envs: list) -> str:
         prefix="",
         envs_url=ENVS_URL)
     page += INDEX_BODY.format(hero="\n".join(hero_cell(e) for e in envs),
-                              groups="\n".join(groups))
+                              groups=grid)
     page += FOOT.format(envs_url=ENVS_URL)
     return page
 

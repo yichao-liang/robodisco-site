@@ -240,11 +240,6 @@ a.env-card { display: block; }
     border-radius: 999px; padding: 0.05rem 0.5rem; margin-left: 0.4rem;
     vertical-align: middle;
 }
-.env-subheading {
-    font-size: 1.05rem; font-weight: 600; color: var(--text-secondary);
-    margin: 2.5rem 0 1rem;
-}
-.env-subheading:first-of-type { margin-top: 0; }
 
 /* ── Env detail page ── */
 .env-page { padding: 2.5rem 0 4rem; }
