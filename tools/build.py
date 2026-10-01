@@ -44,6 +44,7 @@ HEAD = """<!DOCTYPE html>
                 <ul class="nav-links">
                     <li><a href="{prefix}index.html#about">About</a></li>
                     <li><a href="{prefix}index.html#environments">Environments</a></li>
+                    <li><a href="{prefix}index.html#citation">Cite</a></li>
                     <li><a href="{envs_url}" target="_blank">GitHub</a></li>
                     <li><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">&#9790;</button></li>
                 </ul>
@@ -73,6 +74,11 @@ FOOT = """    <footer>
                 localStorage.setItem('theme', 'dark');
             }}
         }}
+        // Scroll smoothly only after load: a smooth jump to a #section during load
+        // aims at an offset that the web font and images then move.
+        window.addEventListener('load', () => {{
+            document.documentElement.classList.add('smooth-scroll');
+        }});
         document.addEventListener('DOMContentLoaded', function() {{
             const btn = document.querySelector('.theme-toggle');
             btn.innerHTML = document.documentElement.getAttribute('data-theme') === 'dark'
@@ -91,6 +97,24 @@ FOOT = """    <footer>
                     box.classList.add('gif-paused');
                 }});
             }});
+            const copy = document.getElementById('copy-bibtex');
+            if (copy) {{
+                copy.addEventListener('click', async () => {{
+                    const source = document.getElementById('bibtex');
+                    try {{
+                        await navigator.clipboard.writeText(source.textContent);
+                        copy.textContent = 'Copied';
+                    }} catch (error) {{
+                        const range = document.createRange();
+                        range.selectNodeContents(source);
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                        copy.textContent = 'Selected, press Ctrl+C';
+                    }}
+                    setTimeout(() => {{ copy.textContent = 'Copy'; }}, 2400);
+                }});
+            }}
         }});
     </script>
 </body>
@@ -136,8 +160,28 @@ INDEX_BODY = """    <main>
 {groups}
             </div>
         </section>
+
+{citation}
     </main>
 
+"""
+
+CITATION = r"""        <section id="citation">
+            <div class="container">
+                <p class="section-label">Citation</p>
+                <h2>Cite RoboDisco</h2>
+                <p>If you use RoboDisco in your research, please cite it as:</p>
+                <div class="code-card">
+                    <div class="code-head"><span>BibTeX</span><button class="copy" type="button" id="copy-bibtex">Copy</button></div>
+                    <pre class="bibtex" id="bibtex">@misc{liang2026robodisco,
+  title = {{RoboDisco}: Robot Model Discovery Benchmark},
+  author = {Liang, Yichao and Weller, Adrian and Tavares, Zenna and Silver, Tom and Ellis, Kevin and others},
+  year = {2026},
+  howpublished = {\url{https://yichao-liang.github.io/robodisco-site/}}
+}</pre>
+                </div>
+            </div>
+        </section>
 """
 
 # Display order of the environment grid: the benchmark domains first.
@@ -152,7 +196,8 @@ def hero_cell(env: dict) -> str:
     s = env["slug"]
     return (f'                    <a class="gif-cell gif-paused" '
             f'href="envs/{s}.html" data-gif="assets/gifs/{s}.gif">'
-            f'<img src="assets/thumbnails/{s}.png" alt="{esc(env["title"])}">'
+            f'<img src="assets/thumbnails/{s}.png" alt="{esc(env["title"])}" '
+            f'width="480" height="480">'
             f'<span class="label">{esc(env["title"])}</span></a>')
 
 
@@ -161,7 +206,7 @@ def card(env: dict) -> str:
     badge = '<span class="badge">Benchmark</span>' if env["group"] == \
         "benchmark" else ""
     return f"""                    <a class="env-card" href="envs/{s}.html" data-gif="assets/gifs/{s}.gif">
-                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/{s}.png" alt="{esc(env['title'])}" loading="lazy"></div>
+                        <div class="env-card-gif gif-paused"><img src="assets/thumbnails/{s}.png" alt="{esc(env['title'])}" width="480" height="480" loading="lazy"></div>
                         <div class="env-card-body"><h3>{esc(env['title'])}{badge}</h3><div class="env-id">{esc(env['env'])}</div><p>{esc(env['tagline'])}</p></div>
                     </a>"""
 
@@ -178,7 +223,8 @@ def build_index(envs: list) -> str:
         prefix="",
         envs_url=ENVS_URL)
     page += INDEX_BODY.format(hero="\n".join(hero_cell(e) for e in envs),
-                              groups=grid)
+                              groups=grid,
+                              citation=CITATION)
     page += FOOT.format(envs_url=ENVS_URL)
     return page
 

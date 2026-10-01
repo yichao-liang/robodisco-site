@@ -23,6 +23,7 @@
                 <ul class="nav-links">
                     <li><a href="../index.html#about">About</a></li>
                     <li><a href="../index.html#environments">Environments</a></li>
+                    <li><a href="../index.html#citation">Cite</a></li>
                     <li><a href="https://github.com/BasisResearch/predicators/tree/master/predicators/envs" target="_blank">GitHub</a></li>
                     <li><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">&#9790;</button></li>
                 </ul>
@@ -74,6 +75,11 @@
                 localStorage.setItem('theme', 'dark');
             }
         }
+        // Scroll smoothly only after load: a smooth jump to a #section during load
+        // aims at an offset that the web font and images then move.
+        window.addEventListener('load', () => {
+            document.documentElement.classList.add('smooth-scroll');
+        });
         document.addEventListener('DOMContentLoaded', function() {
             const btn = document.querySelector('.theme-toggle');
             btn.innerHTML = document.documentElement.getAttribute('data-theme') === 'dark'
@@ -92,6 +98,24 @@
                     box.classList.add('gif-paused');
                 });
             });
+            const copy = document.getElementById('copy-bibtex');
+            if (copy) {
+                copy.addEventListener('click', async () => {
+                    const source = document.getElementById('bibtex');
+                    try {
+                        await navigator.clipboard.writeText(source.textContent);
+                        copy.textContent = 'Copied';
+                    } catch (error) {
+                        const range = document.createRange();
+                        range.selectNodeContents(source);
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                        copy.textContent = 'Selected, press Ctrl+C';
+                    }
+                    setTimeout(() => { copy.textContent = 'Copy'; }, 2400);
+                });
+            }
         });
     </script>
 </body>
