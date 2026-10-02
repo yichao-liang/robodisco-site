@@ -8,8 +8,12 @@
     "description": "Free clipped balloons so their combined lift raises a box to hang at rest inside a target band, without letting any balloon burst on the ceiling. Each colour's lift and each box's mass are hidden, and test levels need balloon combinations never tried in training.",
     "group": "benchmark",
     "solve_split": "test",
-    "solve_note": "A scripted plan: two balloons are freed in an order that keeps both below the ceiling, and the box settles inside the band.",
-    "init_note": "Starting layouts of up to four training and eight test tasks; repeated layouts are shown once."
+    "solve_note": "The test episode of a recorded EMPIRIC run: having learned from its experiments that lift fades with height, the agent frees two balloons and the box comes to rest inside the highest band.",
+    "init_note": "Starting layouts of up to four training and eight test tasks; repeated layouts are shown once.",
+    "solve_link": {
+      "text": "About EMPIRIC",
+      "href": "https://basisresearch.github.io/empiric/"
+    }
   },
   {
     "slug": "boil",
@@ -20,8 +24,12 @@
     "description": "Fill each jug under the faucet and boil it on the burner without spilling, then turn the burner off. Training has one jug; the test level has two jugs sharing one burner.",
     "group": "benchmark",
     "solve_split": "test",
-    "solve_note": "Planned with ground-truth process models (oracle process planning): both jugs are filled and boiled in turn on the one burner. Played at 2x speed.",
-    "init_note": "Starting layouts of up to four training and eight test tasks; repeated layouts are shown once."
+    "solve_note": "The test episode of a recorded EMPIRIC run: the agent wrote the filling and heating its base simulator lacks, overlaps filling and boiling so both jugs boil without a spill, then turns the burner off.",
+    "init_note": "Starting layouts of up to four training and eight test tasks; repeated layouts are shown once.",
+    "solve_link": {
+      "text": "About EMPIRIC",
+      "href": "https://basisresearch.github.io/empiric/"
+    }
   },
   {
     "slug": "bridge",
@@ -32,8 +40,12 @@
     "description": "Stand two blocks as legs and glue the rest end to end into a span across them; glued joints weld only after a hidden curing time. Training builds a three-block span, the test level a four-block span.",
     "group": "benchmark",
     "solve_split": "test",
-    "solve_note": "Planned with ground-truth process models (oracle process planning): two legs, a glued four-block span, and the span seated across the legs. Played at 5x speed.",
-    "init_note": "Starting layouts of up to four training and eight test tasks; repeated layouts are shown once."
+    "solve_note": "The test episode of a recorded EMPIRIC run: after experiments that show how glue bonds, the agent wrote a glue program for its simulator and builds the four-block span. Played at 4x speed.",
+    "init_note": "Starting layouts of up to four training and eight test tasks; repeated layouts are shown once.",
+    "solve_link": {
+      "text": "About EMPIRIC",
+      "href": "https://basisresearch.github.io/empiric/"
+    }
   },
   {
     "slug": "domino",
@@ -44,20 +56,28 @@
     "description": "Place as few blue dominoes as possible so that pushing the start domino topples the target. The true friction differs from the robot's belief, and the test level adds a 90-degree turn.",
     "group": "benchmark",
     "solve_split": "test",
-    "solve_note": "A scripted Pick, Place and Push plan using two blue dominoes, computed with the true friction. Shown from a side camera so the cascade is visible.",
-    "init_note": "Starting layouts of up to four training and eight test tasks; repeated layouts are shown once."
+    "solve_note": "The test episode of a recorded EMPIRIC run: with friction fit to its training cascade, the agent places two blue dominoes that turn the chain through 90 degrees and topple the purple domino.",
+    "init_note": "Starting layouts of up to four training and eight test tasks; repeated layouts are shown once.",
+    "solve_link": {
+      "text": "About EMPIRIC",
+      "href": "https://basisresearch.github.io/empiric/"
+    }
   },
   {
     "slug": "fan",
     "env": "pybullet_fan",
     "module": "pybullet_fan",
     "title": "Fan",
-    "tagline": "Switch banks of fans to blow a ball through a walled grid to a target",
-    "description": "Switch banks of fans on and off to blow a ball around walls onto the target cell. Training uses a small open grid; the test level is a 10x9 maze.",
+    "tagline": "Switch fans to bring a ball to rest at a target",
+    "description": "Switch fans on and off to move a ball across exposed platforms and a downhill ramp, then bring it to rest on its target. The ball's position is noisy, airflow and drag are hidden, and the test target sits at a new position.",
     "group": "benchmark",
     "solve_split": "test",
-    "solve_note": "A scripted plan found by searching the maze: six runs of switching one fan bank on, waiting and switching it off, with the last wait timed to stop the ball on the target. Played at 3.5x speed.",
-    "init_note": "Starting layouts of up to four training and eight test tasks; repeated layouts are shown once."
+    "solve_note": "The test episode of a recorded EMPIRIC run: having learned the fans' airflow and the ball's drag, the agent brings the ball to rest on the target at its new position with a push, brake and blow plan.",
+    "init_note": "Starting layouts of up to four training and eight test tasks; repeated layouts are shown once.",
+    "solve_link": {
+      "text": "About EMPIRIC",
+      "href": "https://basisresearch.github.io/empiric/"
+    }
   },
   {
     "slug": "busyboard",
@@ -140,7 +160,7 @@
     "description": "Move blocks between two plates on a balance beam until they carry equal loads, then press the button. The button only works when the plates are balanced.",
     "group": "classic",
     "solve_split": "test",
-    "solve_note": "A scripted sequence of the environment's skills: two blocks are stacked onto the lighter plate, then the button is pressed.",
+    "solve_note": "Planned with ground-truth operators and samplers (bilevel planning): two blocks are stacked onto the lighter plate, then the button is pressed.",
     "init_note": "Starting layouts of up to four training and eight test tasks; repeated layouts are shown once."
   },
   {

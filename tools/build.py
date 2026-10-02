@@ -149,7 +149,7 @@ INDEX_BODY = """    <main>
                 <p>RoboDisco (Robot Model Discovery Benchmark) is a benchmark suite for embodied world-model learning and causal discovery. It targets agents that must autonomously discover how their environment works &mdash; learning predictive models, identifying causal relationships between actions and outcomes, and forming abstractions that support planning and generalization.</p>
                 <p>The benchmark is developed as part of the MARA (Modeling, Abstraction, Reasoning, and Action) project, which aims to build agents capable of scientific reasoning about novel environments.</p>
                 <p>The suite comprises a diverse set of 3D robotic manipulation environments built on PyBullet, each presenting distinct challenges for world model learning. A Fetch robot must interact with various objects &mdash; from stacking blocks and pouring liquids to completing circuits and redirecting lasers &mdash; requiring agents to discover diverse physical and causal phenomena such as contact mechanics, fluid dynamics, electrical connectivity, and chain reactions.</p>
-                <p>Every clip on this page shows a task being solved, by planning with ground-truth models or by a scripted skill sequence. Each environment page also shows the initial states of several tasks.</p>
+                <p>Every clip on this page shows a task being solved: by planning with ground-truth models, by a scripted skill sequence, or, in the five benchmark domains, by <a href="https://basisresearch.github.io/empiric/" target="_blank">EMPIRIC</a> in the test episode of a recorded run. The clips replay simulator states rendered with Blender Cycles. Each environment page also shows the initial states of several tasks.</p>
             </div>
         </section>
 
@@ -233,6 +233,9 @@ def build_env_page(env: dict, prev: dict, nxt: dict) -> str:
     s = env["slug"]
     badge = '<span class="badge">Benchmark</span>' if env["group"] == \
         "benchmark" else ""
+    link = env.get("solve_link")
+    solve_link = (f' <a href="{esc(link["href"])}" target="_blank">'
+                  f'{esc(link["text"])}</a>' if link else "")
     page = HEAD.format(description=esc(f"RoboDisco {env['title']}: "
                                        f"{env['tagline']}"),
                        title=f"{esc(env['title'])} - RoboDisco",
@@ -247,7 +250,7 @@ def build_env_page(env: dict, prev: dict, nxt: dict) -> str:
             <div class="media-grid">
                 <figure class="media-card">
                     <video src="../assets/videos/{s}.mp4" poster="../assets/thumbnails/{s}.png" autoplay loop muted playsinline controls></video>
-                    <figcaption><strong>Solving a {esc(env['solve_split'])} task.</strong> {esc(env['solve_note'])}</figcaption>
+                    <figcaption><strong>Solving a {esc(env['solve_split'])} task.</strong> {esc(env['solve_note'])}{solve_link}</figcaption>
                 </figure>
                 <figure class="media-card">
                     <img src="../assets/init/{s}.gif" alt="Initial states of several {esc(env['title'])} tasks">
